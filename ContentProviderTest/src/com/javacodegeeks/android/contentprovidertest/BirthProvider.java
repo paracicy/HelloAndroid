@@ -16,47 +16,46 @@ import android.text.TextUtils;
 import android.util.Log;
 
 public class BirthProvider extends ContentProvider {
-	 // fields for my content provider
-	 static final String PROVIDER_NAME = "com.javacodegeeks.provider.BirthdayProv";
-	 static final String URL = "content://" + PROVIDER_NAME + "/friends";
-	 static final Uri CONTENT_URI = Uri.parse(URL);
+	// fields for my content provider
+	static final String PROVIDER_NAME = "com.javacodegeeks.provider.BirthdayProv";
+	static final String URL = "content://" + PROVIDER_NAME + "/friends";
+	static final Uri CONTENT_URI = Uri.parse(URL);
 	   
-	 // fields for the database
-	 static final String ID = "id";
-	 static final String NAME = "name";
-	 static final String BIRTHDAY = "birthday";
+	// fields for the database
+	static final String ID = "id";
+	static final String NAME = "name";
+	static final String BIRTHDAY = "birthday";
 	 
-	 // integer values used in content URI
-	 static final int FRIENDS = 1;
-	 static final int FRIENDS_ID = 2;
+	// integer values used in content URI
+	static final int FRIENDS = 1;
+	static final int FRIENDS_ID = 2;
 	 
-	 DBHelper dbHelper;
+	DBHelper dbHelper;
 	   
-	 // projection map for a query
-	 private static HashMap<String, String> BirthMap;
+	// projection map for a query
+	private static HashMap<String, String> BirthMap;
 	 
-	 // maps content URI "patterns" to the integer values that were set above
-	 static final UriMatcher uriMatcher;
-	   static{
-	      uriMatcher = new UriMatcher(UriMatcher.NO_MATCH);
-	      uriMatcher.addURI(PROVIDER_NAME, "friends", FRIENDS);
-	      uriMatcher.addURI(PROVIDER_NAME, "friends/#", FRIENDS_ID);
-	   }
+	// maps content URI "patterns" to the integer values that were set above
+	static final UriMatcher uriMatcher;
+	static {
+		uriMatcher = new UriMatcher(UriMatcher.NO_MATCH);
+	    uriMatcher.addURI(PROVIDER_NAME, "friends", FRIENDS);
+	    uriMatcher.addURI(PROVIDER_NAME, "friends/#", FRIENDS_ID);
+	}
 	   
-	   // database declarations
-	   private SQLiteDatabase database;
-	   static final String DATABASE_NAME = "BirthdayReminder";
-	   static final String TABLE_NAME = "birthTable";
-	   static final int DATABASE_VERSION = 1;
-	   static final String CREATE_TABLE = 
+	// database declarations
+	private SQLiteDatabase database;
+	static final String DATABASE_NAME = "BirthdayReminder";
+	static final String TABLE_NAME = "birthTable";
+	static final int DATABASE_VERSION = 1;
+	static final String CREATE_TABLE = 
 	      " CREATE TABLE " + TABLE_NAME +
 	      " (id INTEGER PRIMARY KEY AUTOINCREMENT, " + 
 	      " name TEXT NOT NULL, " +
 	      " birthday TEXT NOT NULL);";
 	 
-	   
-	   // class that creates and manages the provider's database 
-	   private static class DBHelper extends SQLiteOpenHelper {
+	// class that creates and manages the provider's database 
+	private static class DBHelper extends SQLiteOpenHelper {
 
 		public DBHelper(Context context) {
 			super(context, DATABASE_NAME, null, DATABASE_VERSION);
@@ -77,9 +76,8 @@ public class BirthProvider extends ContentProvider {
 			            + newVersion + ". Old data will be destroyed");
 			db.execSQL("DROP TABLE IF EXISTS " +  TABLE_NAME);
 	        onCreate(db);
-		}
-		
-	   }
+		}	
+	}
 	   
 	@Override
 	public boolean onCreate() {
@@ -146,23 +144,23 @@ public class BirthProvider extends ContentProvider {
 	public int update(Uri uri, ContentValues values, String selection,
 			String[] selectionArgs) {
 		// TODO Auto-generated method stub
-		 int count = 0;
+		int count = 0;
 	      
-	      switch (uriMatcher.match(uri)){
-	      case FRIENDS:
-	         count = database.update(TABLE_NAME, values, selection, selectionArgs);
-	         break;
-	      case FRIENDS_ID:
-	         count = database.update(TABLE_NAME, values, ID + 
-	                 " = " + uri.getLastPathSegment() + 
-	                 (!TextUtils.isEmpty(selection) ? " AND (" +
-	                 selection + ')' : ""), selectionArgs);
-	         break;
-	      default: 
-	         throw new IllegalArgumentException("Unsupported URI " + uri );
-	      }
-	      getContext().getContentResolver().notifyChange(uri, null);
-	      return count;
+	    switch (uriMatcher.match(uri)){
+		    case FRIENDS:
+		        count = database.update(TABLE_NAME, values, selection, selectionArgs);
+		        break;
+		    case FRIENDS_ID:
+		        count = database.update(TABLE_NAME, values, ID + 
+		                 " = " + uri.getLastPathSegment() + 
+		                 (!TextUtils.isEmpty(selection) ? " AND (" +
+		                 selection + ')' : ""), selectionArgs);
+		        break;
+		    default: 
+		        throw new IllegalArgumentException("Unsupported URI " + uri );
+	    }
+	    getContext().getContentResolver().notifyChange(uri, null);
+	    return count;
 	}
 	
 	@Override
@@ -170,25 +168,23 @@ public class BirthProvider extends ContentProvider {
 		// TODO Auto-generated method stub
 		int count = 0;
 		
-		 switch (uriMatcher.match(uri)){
-	      case FRIENDS:
-	    	  // delete all the records of the table
-	    	  count = database.delete(TABLE_NAME, selection, selectionArgs);
-	    	  break;
-	      case FRIENDS_ID:
-	      	  String id = uri.getLastPathSegment();	//gets the id
-	          count = database.delete( TABLE_NAME, ID +  " = " + id + 
+		switch (uriMatcher.match(uri)){
+	        case FRIENDS:
+	    	    // delete all the records of the table
+	    	    count = database.delete(TABLE_NAME, selection, selectionArgs);
+	    	    break;
+	        case FRIENDS_ID:
+	      	    String id = uri.getLastPathSegment();	//gets the id
+	            count = database.delete( TABLE_NAME, ID +  " = " + id + 
 	                (!TextUtils.isEmpty(selection) ? " AND (" + 
 	                selection + ')' : ""), selectionArgs);
-	          break;
-	      default: 
-	          throw new IllegalArgumentException("Unsupported URI " + uri);
-	      }
+	            break;
+	        default: 
+	            throw new IllegalArgumentException("Unsupported URI " + uri);
+	    }
 	      
-	      getContext().getContentResolver().notifyChange(uri, null);
-	      return count;
-		
-		
+	    getContext().getContentResolver().notifyChange(uri, null);
+	    return count;
 	}
 
 	@Override
@@ -203,8 +199,6 @@ public class BirthProvider extends ContentProvider {
 	         return "vnd.android.cursor.item/vnd.example.friends";
 	      default:
 	         throw new IllegalArgumentException("Unsupported URI: " + uri);
-	      }
+	    }
 	}
-
-
 }
